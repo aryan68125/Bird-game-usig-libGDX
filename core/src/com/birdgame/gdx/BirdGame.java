@@ -274,7 +274,7 @@ public class BirdGame extends ApplicationAdapter {
 				//bombX.get(i)-4 = moves bombs from right to left the speed can be controlled by changing the number four
 				//higher the number faster the bomb moves on the screen
 				bombX.set(i, bombX.get(i) - 10);
-
+				
 				//coinRectangles.add(new Rectangle(coinX.get(i), coinY.get(i), coin.getWidth(),coin.getHeight())); = now adding the coin physX onto our coins
 				//new Rectangle(coordinates of the screen, size of the coin on the screen) = it will set the Rectangle on to our coins
 				//coinX.get(i), coinY.get(i) = telling the rectangle to appear where the coin appear on the screen
