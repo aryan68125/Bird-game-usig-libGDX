@@ -114,6 +114,9 @@ public class BirdGame extends ApplicationAdapter {
 	//creating a crash sound object
 	private Sound crash;
 
+	//creating a enemy escaped sound
+	private Sound enemyEscaped;
+
 	//Adding bullets into the game
 	//it will hold a bunch of bomb objects that are gonna be appearing on the screen
 	//creating an arrayList that will hold the coordinates of our bomb
@@ -125,11 +128,18 @@ public class BirdGame extends ApplicationAdapter {
 	//it will allow us to show a bullet after every 100 loop of screen render
 	int bulletCount;
 
+	//adding a transparent line so that we can detect its collision with the bombs
+	Texture line;
+	Rectangle lineR;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 
 		background = new Texture("background.png");
+
+		//inintializing line texture
+		line = new Texture("line.png");
 
 		//setting up our character in our game
 		man = new Texture[4];
@@ -186,6 +196,8 @@ public class BirdGame extends ApplicationAdapter {
 		sound = Gdx.audio.newSound(Gdx.files.internal("shoot.mp3"));
 		//initializing sound crash object
 		crash = Gdx.audio.newSound(Gdx.files.internal("crash.mp3"));
+		//initializing enemyEscaped sound
+		enemyEscaped = Gdx.audio.newSound(Gdx.files.internal("enemyescaped.mp3"));
 	}
 
 	//method that deals with showing multiple bomb on our screen randomely
@@ -239,6 +251,11 @@ public class BirdGame extends ApplicationAdapter {
 		//setting up our game background
 		batch.draw(background,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
+		//setting up the line Texture
+		batch.draw(line,0,0,1,Gdx.graphics.getHeight());
+		//setting up rectangle on the line
+		lineR = new Rectangle(0, 0, 1, Gdx.graphics.getHeight());
+
 		//checking the state in which our game is
 		//if our gameState is equal to 1 then the game will behave normally
 		//if our gameState =0 then we are at the starting position
@@ -274,7 +291,7 @@ public class BirdGame extends ApplicationAdapter {
 				//bombX.get(i)-4 = moves bombs from right to left the speed can be controlled by changing the number four
 				//higher the number faster the bomb moves on the screen
 				bombX.set(i, bombX.get(i) - 10);
-				
+
 				//coinRectangles.add(new Rectangle(coinX.get(i), coinY.get(i), coin.getWidth(),coin.getHeight())); = now adding the coin physX onto our coins
 				//new Rectangle(coordinates of the screen, size of the coin on the screen) = it will set the Rectangle on to our coins
 				//coinX.get(i), coinY.get(i) = telling the rectangle to appear where the coin appear on the screen
@@ -407,7 +424,7 @@ public class BirdGame extends ApplicationAdapter {
 				//current position = i
 				//bombX.get(i)-4 = moves bombs from right to left the speed can be controlled by changing the number four
 				//higher the number faster the bomb moves on the screen
-				bulletX.set(i, bulletX.get(i) + 20);
+				bulletX.set(i, bulletX.get(i) + 30);
 
 				//coinRectangles.add(new Rectangle(coinX.get(i), coinY.get(i), coin.getWidth(),coin.getHeight())); = now adding the coin physX onto our coins
 				//new Rectangle(coordinates of the screen, size of the coin on the screen) = it will set the Rectangle on to our coins
@@ -443,6 +460,7 @@ public class BirdGame extends ApplicationAdapter {
 					gameState = 2;
 					break;
 				}
+			}
 
 				/** -------SETTING UP COLLISION MECHANISM FOR BOMB2-----**/
 				//now setting up the collision mechanism for birds after everything is drawn
@@ -489,7 +507,7 @@ public class BirdGame extends ApplicationAdapter {
 							break;
 						}
 					}
-
+				}
 					//checking the collision between the bullets and the bugs (bomb2)
 					int bul2;
 					for (int b2 = 0; b2 < bombRectangles2.size(); b2++) {
@@ -512,8 +530,51 @@ public class BirdGame extends ApplicationAdapter {
 						}
 					}
 
+					//setting up collisions for our bomb1
+			for (int j = 0; j < bombRectangles.size(); j++) {
+				//Intersector.overlaps() it checks whether the two images that have the designated polygons assigned to them have collided or not
+				if (Intersector.overlaps(lineR, bombRectangles.get(j))) {
+					//so lets go ahead and log some information here
+					Gdx.app.log("Bomb", "Collision with bomb2");
+
+					//getting rid of the bomb after the collision with the bomb of our character
+					bombRectangles.remove(j);
+					bombX.remove(j);
+					bombY.remove(j);
+
+					//playing enemy Escaped sound when the plane is collided with the bird
+					long id = enemyEscaped.play(Float.parseFloat("1.0f"));
+					enemyEscaped.setLooping(id, false);
+
+					//updating our gameState
+					gameState = 2;
+					break;
 				}
 			}
+
+					//setting up collision between our bomb2 and our line
+			for (int j = 0; j < bombRectangles2.size(); j++) {
+				//Intersector.overlaps() it checks whether the two images that have the designated polygons assigned to them have collided or not
+				if (Intersector.overlaps(lineR, bombRectangles2.get(j))) {
+					//so lets go ahead and log some information here
+					Gdx.app.log("Bomb2", "Collision with bomb2");
+
+					//getting rid of the bomb after the collision with the bomb of our character
+					bombRectangles2.remove(j);
+					bombX2.remove(j);
+					bombY2.remove(j);
+
+					//playing enemy Escaped sound when the plane is collided with the bird
+					long id = enemyEscaped.play(Float.parseFloat("1.0f"));
+					enemyEscaped.setLooping(id, false);
+
+					//updating our gameState
+					gameState = 2;
+					break;
+				}
+			}
+
+
 		}
 		else if(gameState == 0)
 		{
@@ -562,6 +623,17 @@ public class BirdGame extends ApplicationAdapter {
 
 			//drawing manDead
 			batch.draw(manDead,manX, manY);
+
+			//clearing everything and resetting the game all over again
+			velocity = 0;
+			bombX.clear();
+			bombY.clear();
+			bombRectangles.clear();
+			bombCount = 0;
+			bombX2.clear();
+			bombY2.clear();
+			bombRectangles2.clear();
+			bombCount2 = 0;
 
 			//now showing highScore in the game
 			savedHighscore();
