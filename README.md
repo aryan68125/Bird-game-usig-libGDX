@@ -1,6 +1,6 @@
 # Bird-game-usig-libGDX
-This is a Game written in java using LibGDX that runs on android Os based devices
-It uses device's accelerometer and gyro sensors to move the plane up and down. you have to press on the screen to fire bullets from the aircraft
+This game is written in java using LibGDX that runs on android Os.
+It uses the device's accelerometer and gyro sensors to move the plane up and down. you have to press on the screen to fire bullets from the aircraft
 
 Here are some sample images of the game:-
 ![](android/res/drawable/one.png)
